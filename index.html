@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Login - MR.IT</title>
+  <style>
+    body{
+      font-family:Arial,Helvetica,sans-serif;
+      background:#f3f6f9;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      height:100vh;
+      margin:0
+    }
+    .card{
+      background:#fff;
+      padding:24px;
+      border-radius:8px;
+      box-shadow:0 6px 18px rgba(50,50,93,.06);
+      width:360px
+    }
+    h2{
+      margin:0 0 12px 0;
+      font-size:20px
+    }
+    input{
+      width:100%;
+      padding:10px;
+      margin:8px 0;
+      border:1px solid #d9e2ec;
+      border-radius:6px;
+      box-sizing:border-box
+    }
+    button{
+      width:100%;
+      padding:10px;
+      border:0;
+      border-radius:6px;
+      background:#0b5fff;
+      color:#fff;
+      font-weight:600;
+      cursor:pointer
+    }
+    .msg{
+      margin-top:10px;
+      height:18px;
+      font-weight:600
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>Login</h2>
+    <input id="username" placeholder="username" />
+    <input id="password" type="password" placeholder="password" />
+    <button id="btn">Login</button>
+    <div class="msg" id="msg"></div>
+  </div>
+
+  <script>
+    document.getElementById('btn').addEventListener('click', login);
+    function login(){
+      const u = encodeURIComponent(document.getElementById('username').value);
+      const p = encodeURIComponent(document.getElementById('password').value);
+      document.getElementById('msg').textContent = 'Checking...';
+      fetch('login.php', {
+        method: 'POST',
+        headers: {'Content-Type':'application/x-www-form-urlencoded'},
+        body: `username=${u}&password=${p}`
+      })
+      .then(r => r.text())
+      .then(text => {
+        if(text.trim() === 'success'){
+          document.getElementById('msg').style.color = 'green';
+          document.getElementById('msg').textContent = 'Login successful!';
+        } else {
+          document.getElementById('msg').style.color = 'crimson';
+          document.getElementById('msg').textContent = 'Incorrect credentials.';
+        }
+      })
+      .catch(err => {
+        document.getElementById('msg').style.color = 'crimson';
+        document.getElementById('msg').textContent = 'Network error';
+      });
+    }
+  </script>
+</body>
+</html>
