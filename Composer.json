@@ -1,0 +1,5 @@
+{
+  "name": "mr-it/login-system",
+  "description": "Simple PHP login for Railway deploy",
+  "require": {}
+}
