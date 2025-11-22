@@ -1,93 +1,188 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Login - MR.IT</title>
-  <style>
-    body{
-      font-family:Arial,Helvetica,sans-serif;
-      background:#f3f6f9;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      height:100vh;
-      margin:0
-    }
-    .card{
-      background:#fff;
-      padding:24px;
-      border-radius:8px;
-      box-shadow:0 6px 18px rgba(50,50,93,.06);
-      width:360px
-    }
-    h2{
-      margin:0 0 12px 0;
-      font-size:20px
-    }
-    input{
-      width:100%;
-      padding:10px;
-      margin:8px 0;
-      border:1px solid #d9e2ec;
-      border-radius:6px;
-      box-sizing:border-box
-    }
-    button{
-      width:100%;
-      padding:10px;
-      border:0;
-      border-radius:6px;
-      background:#0b5fff;
-      color:#fff;
-      font-weight:600;
-      cursor:pointer
-    }
-    .msg{
-      margin-top:10px;
-      height:18px;
-      font-weight:600
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login & Register - MR.IT</title>
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: #f2f2f2;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.container {
+    background: white;
+    padding: 30px;
+    width: 360px;
+    border-radius: 10px;
+    box-shadow: 0px 0px 15px #aaa;
+    text-align: center;
+}
+
+h2 {
+    margin-bottom: 20px;
+}
+
+input {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+    border: 1px solid #aaa;
+    box-sizing: border-box;
+}
+
+button {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    background: #0b5fff;
+    color: white;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+button:hover {
+    background: #004ccc;
+}
+
+.msg {
+    margin-top: 10px;
+    font-weight: bold;
+    height: 20px;
+}
+
+.switch {
+    margin-top: 15px;
+    font-size: 14px;
+}
+
+.switch a {
+    color: #0b5fff;
+    cursor: pointer;
+    text-decoration: none;
+}
+</style>
 </head>
 <body>
-  <div class="card">
-    <p style="margin-top: 15px;">
-    Don't have an account? <a href="register.html">Register here</a>
-</p>
-    <h2>Login</h2>
-    <input id="username" placeholder="username" />
-    <input id="password" type="password" placeholder="password" />
-    <button id="btn">Login</button>
-    <div class="msg" id="msg"></div>
-  </div>
 
-  <script>
-    document.getElementById('btn').addEventListener('click', login);
-    function login(){
-      const u = encodeURIComponent(document.getElementById('username').value);
-      const p = encodeURIComponent(document.getElementById('password').value);
-      document.getElementById('msg').textContent = 'Checking...';
-      fetch('login.php', {
+<div class="container">
+    <h2 id="form-title">Login</h2>
+
+    <!-- Login Form -->
+    <div id="login-form">
+        <input type="text" id="login-username" placeholder="Username">
+        <input type="password" id="login-password" placeholder="Password">
+        <button onclick="login()">Login</button>
+        <div class="msg" id="login-msg"></div>
+        <div class="switch">
+            Don't have an account? <a onclick="toggleForm()">Register here</a>
+        </div>
+    </div>
+
+    <!-- Register Form -->
+    <div id="register-form" style="display:none;">
+        <input type="text" id="reg-username" placeholder="Username">
+        <input type="password" id="reg-password" placeholder="Password">
+        <button onclick="register()">Register</button>
+        <div class="msg" id="reg-msg"></div>
+        <div class="switch">
+            Already have an account? <a onclick="toggleForm()">Login here</a>
+        </div>
+    </div>
+</div>
+
+<script>
+function toggleForm() {
+    const loginForm = document.getElementById('login-form');
+    const regForm = document.getElementById('register-form');
+    const title = document.getElementById('form-title');
+
+    if(loginForm.style.display === 'none'){
+        loginForm.style.display = 'block';
+        regForm.style.display = 'none';
+        title.textContent = 'Login';
+    } else {
+        loginForm.style.display = 'none';
+        regForm.style.display = 'block';
+        title.textContent = 'Register';
+    }
+}
+
+// LOGIN function
+function login() {
+    const user = encodeURIComponent(document.getElementById('login-username').value);
+    const pass = encodeURIComponent(document.getElementById('login-password').value);
+    const msg = document.getElementById('login-msg');
+
+    if(!user || !pass){
+        msg.textContent = "Fill all fields!";
+        msg.style.color = 'red';
+        return;
+    }
+
+    fetch('login.php', {
         method: 'POST',
         headers: {'Content-Type':'application/x-www-form-urlencoded'},
-        body: `username=${u}&password=${p}`
-      })
-      .then(r => r.text())
-      .then(text => {
-        if(text.trim() === 'success'){
-          document.getElementById('msg').style.color = 'green';
-          document.getElementById('msg').textContent = 'Login successful!';
+        body: `username=${user}&password=${pass}`
+    })
+    .then(res => res.text())
+    .then(data => {
+        if(data.trim() === 'success'){
+            msg.style.color = 'green';
+            msg.textContent = 'Login successful!';
+            setTimeout(()=> window.location.href='dashboard.html', 700);
         } else {
-          document.getElementById('msg').style.color = 'crimson';
-          document.getElementById('msg').textContent = 'Incorrect credentials.';
+            msg.style.color = 'red';
+            msg.textContent = 'Incorrect credentials!';
         }
-      })
-      .catch(err => {
-        document.getElementById('msg').style.color = 'crimson';
-        document.getElementById('msg').textContent = 'Network error';
-      });
+    })
+    .catch(err=>{
+        msg.style.color = 'red';
+        msg.textContent = 'Network error';
+    });
+}
+
+// REGISTER function
+function register() {
+    const user = encodeURIComponent(document.getElementById('reg-username').value);
+    const pass = encodeURIComponent(document.getElementById('reg-password').value);
+    const msg = document.getElementById('reg-msg');
+
+    if(!user || !pass){
+        msg.textContent = "Fill all fields!";
+        msg.style.color = 'red';
+        return;
     }
-  </script>
+
+    fetch('register.php', {
+        method: 'POST',
+        headers: {'Content-Type':'application/x-www-form-urlencoded'},
+        body: `username=${user}&password=${pass}`
+    })
+    .then(res => res.text())
+    .then(data => {
+        if(data.trim() === 'success'){
+            msg.style.color = 'green';
+            msg.textContent = 'Registration successful! Switch to login.';
+        } else {
+            msg.style.color = 'red';
+            msg.textContent = data;
+        }
+    })
+    .catch(err=>{
+        msg.style.color = 'red';
+        msg.textContent = 'Network error';
+    });
+}
+</script>
+
 </body>
 </html>
